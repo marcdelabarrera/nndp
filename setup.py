@@ -5,17 +5,17 @@ with open("README.md","r") as fh:
     long_description = fh.read()
 
 setup(
-    name = 'dsolve',
-    version = '0.0.9',
-    description = 'Solver of dynamic equations with forward looking variables',
+    name = 'nndp',
+    version = '0.0.1',
+    description = 'Dynamic Programming with Neural Networks',
     long_description = long_description,
     long_description_content_type='text/markdown',
-    py_modules = ["dsolve.atoms", "dsolve.expressions", "dsolve.solvers", "dsolve.utils","dsolve.statespace", "dsolve.linearization"],
+    #py_modules = ["dsolve.atoms", "dsolve.expressions", "dsolve.solvers", "dsolve.utils","dsolve.statespace", "dsolve.linearization"],
     package_dir={'':'src'},
     author='Marc de la Barrera i Bardalet',
-    url = 'https://github.com/marcdelabarrera/dsolve',
+    url = 'https://github.com/marcdelabarrera/nndp',
     author_email='mbarrera@mit.edu',
-    install_requires = ["scipy >= 1.9.0", "sympy >= 1.11", "numpy >=1.20.0", "IPython >= 7.12.0"],
+    install_requires = ["numpy >=1.20.0"],
     extras_require={"dev":["pytest>=7.1.2",],},
     classifiers =[
         "Programming Language :: Python :: 3.10"
