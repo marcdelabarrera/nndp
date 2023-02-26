@@ -5,7 +5,7 @@ from jax._src.basearray import Array
 from jax.tree_util import Partial
 from jax._src.prng import PRNGKeyArray
 
-# Economic parameters
+# Economic parameters used in functions
 T = 10 # number of periods: t=0, ...,T where death occurs at T
 beta = 0.98 # discount factor
 gamma = 1.1 # relative risk aversion
@@ -15,7 +15,6 @@ sigma_y = 0.2 # transitory shock variable
 sigma_y_st = sigma_y / jnp.sqrt(1 - rho**2) # stationary variable of AR(1)
 logy_bound = [-2 * sigma_y_st, 2 * sigma_y_st] # bound for log income
 a_bound = [0, 10] # bound for assets
-
 
 @jax.jit
 def u(state:Array, action:Array) -> Array:
@@ -58,21 +57,18 @@ def F(key:PRNGKeyArray, N:int) -> Array:
     return state
 
 @jax.jit
-def policy(state:Array, 
-           params:dict,
-           nn:Callable[[dict, Array], Array], 
-           Gamma:Callable[[Array], Array]           
-           ) -> Array:
+def nn_to_action(state:Array, 
+                 params:dict,
+                 nn:Callable[[dict, Array], Array]
+                 ) -> Array:
     '''
-    Defines policy function that maps states to actions, depending
-    on the bounds for each action.
+    Defines how a Haiku Neural Network, nn, with parameters, params, is mapped
+    into an action.
     
     Parameters:
     -----------
     state: current state = N_simul x n_states
-    nn: JAX Neural Network created with initialize_nn() that takes NN
-        parameters and state as inputs
-    Gamma: function that returns that upper and lower limit on each action
+    nn: Haiku Neural Network with signature nn(params, state)
     params: dictionary of parameters used by nn. 
 
     Returns:

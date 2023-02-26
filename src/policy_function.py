@@ -78,8 +78,7 @@ def initialize_nn(key:Array,
         return policy_args(p, X, P, N_nodes, N_hidden, f_activation, f_outputs)
     return params, nn
 
-def make_policy_function(policy:Callable,
-                         Gamma:Callable,
+def make_policy_function(nn_to_action:Callable,
                          key:Array,
                          K:int, 
                          P:int, 
@@ -88,6 +87,28 @@ def make_policy_function(policy:Callable,
                          f_activation:jaxlib.xla_extension.CompiledFunction,
                          f_outputs:list
                          ) -> Callable:
+    '''
+    This function creates a policy function for the model of interest that is Haiku Neural
+    Network with the supplied set of parameters.
+    
+    Parameters:
+    ----------
+    nn_to_action: user-defined function that characterizes how outputs of neural network
+        translate into an action in the model
+    key: JAX RNG key
+    K: number of state variables in model
+    P: dimension of output layer = dimension of policy function
+    N_nodes: number of nodes in each layer except output layer
+    N_layers: number of hidden layers
+    f_activation: activation function use in all but output layers (e.g. jax.nn.tanh, jax.nn.relu)
+    f_outputs: list of Callable jaxlib.xla_extension.CompiledFunction (e.g. jax.nn.sigmoid). 
+        The length of this list must be equal to P, as you need a separate activation function for each output. 
+        
+    Returns:
+    ----------
+    params: initialized parameters of NN
+    nn: policy function that is a neural network
+    '''
     params, nn = initialize_nn(key = key,
                                K = K,
                                P = P,
@@ -96,5 +117,5 @@ def make_policy_function(policy:Callable,
                                f_activation = f_activation,
                                f_outputs = f_outputs
                                )
-    policy_out = Partial(policy, nn = Partial(nn), Gamma = Partial(Gamma))
-    return params, policy_out
+    policy = Partial(nn_to_action, nn = Partial(nn))
+    return params, policy
