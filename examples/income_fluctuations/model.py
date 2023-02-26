@@ -31,12 +31,12 @@ def u(state:Array,
 
 @jax.jit
 def m(key:PRNGKeyArray,
-          state:Array,
-          action:Array,
-          R:float,
-          rho:float,
-          sigma_y:float
-          ) -> Array:
+      state:Array,
+      action:Array,
+      R:float,
+      rho:float,
+      sigma_y:float
+      ) -> Array:
     '''
     Given a state and action, returns the next state assuming income
     follows an AR1
@@ -90,18 +90,15 @@ def policy(state:Array,
     
     Parameters:
     -----------
-    state: Array
-        Current state N_simul x n_states
-    nn: callable
-        JAX Neural Network created with initialize_nn() that takes NN
+    state: current state = N_simul x n_states
+    nn: JAX Neural Network created with initialize_nn() that takes NN
         parameters and state as inputs
-    Gamma: callable
-        Function that returns that upper and lower limit on each action
-    params: dict
-        Dictionary of parameters used by nn. 
+    Gamma: function that returns that upper and lower limit on each action
+    params: dictionary of parameters used by nn. 
+
     Returns:
-    action: Array
-        Action to take N_simul x n_actions.
+    -----------
+    action: action to take = N_simul x n_actions.
     '''
     c_min, c_max = Gamma(state)[0]
     action = c_min + nn(params, state) * c_max
