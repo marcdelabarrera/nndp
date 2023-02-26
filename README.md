@@ -29,4 +29,5 @@ We parametrize $\pi(s_t)=\tilde\pi(s_t,\theta)$ as a fully connected feedforward
 We provide an example application to the income fluctations problem in `examples/income_fluctuations/main.ipynb` to illustrate how this framework can be used.
 
 # References
-Duarte, Victor, Julia Fonseca, Jonathan A. Parker, and Aaron Goodman (2021), “Simple Allocation Rules and Optimal Portfolio Choice Over the Lifecycle”, Working Paper.
+Duarte, Victor, Julia Fonseca, Jonathan A. Parker, and Aaron Goodman (2021), Simple Allocation Rules and Optimal Portfolio Choice Over the Lifecycle, Working Paper.
+
