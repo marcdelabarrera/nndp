@@ -107,7 +107,7 @@ def make_policy_function(nn_to_action:Callable,
     Returns:
     ----------
     params: initialized parameters of NN
-    nn: policy function that is a neural network
+    policy: policy function that is a neural network with signature policy(state, params)
     '''
     params, nn = initialize_nn(key = key,
                                K = K,
