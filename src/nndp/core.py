@@ -12,7 +12,7 @@ def evaluate_policy(key:PRNGKeyArray,
                     m:Callable[[PRNGKeyArray, Array, Array], Array], 
                     s0:Array,
                     T:int,
-                    N_simul:int
+                    N_simul:int=1
                     ) -> Array:
     '''
     Calculates value function for a given set of initial states, simulating

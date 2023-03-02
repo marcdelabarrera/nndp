@@ -6,7 +6,7 @@ with open("README.md","r") as fh:
 
 setup(
     name = 'nndp',
-    version = '0.0.3',
+    version = '0.0.4',
     description = 'Dynamic Programming with Neural Networks',
     long_description = long_description,
     long_description_content_type='text/markdown',
@@ -15,8 +15,8 @@ setup(
     author='Marc de la Barrera i Bardalet',
     url = 'https://github.com/marcdelabarrera/nndp',
     author_email='mbarrera@mit.edu',
-    install_requires = ["numpy >=1.20.0","jax >= 0.4.0", "optax >= 0.1.0"],
-    extras_require={"dev":["pytest>=7.1.2",],},
+    install_requires = ["numpy >= 1.20.0","jax >= 0.3.22", "optax >= 0.1.0", "jaxlib >= 0.3.22", "dm-haiku >= 0.0.9"],
+    extras_require={"dev":["pytest >= 7.1.2",]},
     classifiers =[
         "Programming Language :: Python :: 3.10"
     ]
