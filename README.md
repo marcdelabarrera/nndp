@@ -2,6 +2,8 @@
 
 By: Marc de la Barrera i Bardalet, Tim de Silva
 
+## Overview
+
 `nndp` provides a framework for solving finite horizon dynamic programming problems using neural networks that is implemented using the [JAX](https://github.com/google/jax) functional programming paradigm and [Haiku](https://github.com/deepmind/dm-haiku). This solution technique, introduced and described in detail by [Duarte, Fonesca, Goodman, and Parker (2021)](https://0f2486b1-f568-477b-8307-dd98a6c77afd.filesusr.com/ugd/f9db9d_972da014adb2453b8a4dab0239909062.pdf), applies to problems of the following form: 
 
 $$V(s_0)=\max_{a_t\in\Gamma(s_t)} E_0\left[\sum_{t=0}^T u(s_t,a_t)\right],$$
