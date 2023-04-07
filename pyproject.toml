@@ -1,0 +1,14 @@
+
+
+
+
+[project]
+name = "nndp"
+
+
+[project.optional-dependencies]
+doc = [
+"sphinx~=4.2.0",
+"myst-parser",
+"furo",
+]
