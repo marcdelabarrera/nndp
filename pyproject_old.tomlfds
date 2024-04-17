@@ -1,0 +1,30 @@
+
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+
+[project]
+name = "nndp"
+version = "0.0.6"
+description = "Read the latest Real Python tutorials"
+readme = "README.md"
+authors = [{ name = "Real Python", email = "info@realpython.com" }]
+license = { file = "LICENSE" }
+keywords = ["feed", "reader", "tutorial"]
+dependencies = [
+    "numpy >= 1.20.0",
+    "jax >= 0.3.22",
+    "optax >= 0.1.0",
+    "jaxlib >= 0.3.22",
+    "dm-haiku >= 0.0.9"
+]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+doc = [
+"sphinx~=4.2.0",
+"myst-parser",
+"furo",
+]

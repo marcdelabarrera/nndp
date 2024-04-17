@@ -8,7 +8,7 @@
 
 project = 'nndp'
 copyright = '2023, Marc de la Barrera, Tim da Silva'
-author = 'Marc de la Barrera, Tim da Silva'
+author = 'Marc de la Barrera, Tim de Silva'
 release = '0.0.1.'
 
 # -- General configuration ---------------------------------------------------
