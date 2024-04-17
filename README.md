@@ -28,7 +28,7 @@ We parametrize $\pi(s_t)=\tilde\pi(s_t,\theta)$ as a fully connected feedforward
 4. `F(key, N)`: samples `N` observations from the distribution of $s_0$. `key` is a JAX RNG key used to simulate any shocks present in the model.
 5. `nn_to_action(state, params, nn)`: defines how the output of a Haiku Neural Network, `nn`, with parameters, `params`, is mapped into an action at $s_t$ = `state`
 
-We provide an example application to the income fluctations problem in `examples/income_fluctuations/main.ipynb` to illustrate how this framework can be used.
+We provide an example application to the income fluctations problem in `docs/source/notebooks/income_fluctuations/main.ipynb` to illustrate how this framework can be used.
 
 ## Installation
 
