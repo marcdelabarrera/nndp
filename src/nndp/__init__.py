@@ -1,1 +1,2 @@
-from nndp.core import *
+from .core import *
+from .agnostic import *

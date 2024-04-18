@@ -45,7 +45,7 @@ def initialize_nn(key:Array,
                   P:int, 
                   N_nodes:int,
                   N_hidden:int,
-                  f_activation:jaxlib.xla_extension.CompiledFunction,
+                  f_activation:jaxlib.xla_extension.PjitFunction,
                   f_outputs:list
                   ) -> list[dict, Callable]:
     '''
@@ -59,7 +59,7 @@ def initialize_nn(key:Array,
     N_nodes: number of nodes in each layer except output layer
     N_layers: number of hidden layers
     f_activation: activation function use in all but output layers (e.g. jax.nn.tanh, jax.nn.relu)
-    f_outputs: list of Callable jaxlib.xla_extension.CompiledFunction (e.g. jax.nn.sigmoid). 
+    f_outputs: list of Callable jaxlib.xla_extension.PjitFunction (e.g. jax.nn.sigmoid). 
         The length of this list must be equal to P, as you need a separate activation function for each output. 
         
     Returns:

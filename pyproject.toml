@@ -7,12 +7,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nndp"
-version = "0.0.6"
-description = "Read the latest Real Python tutorials"
+version = "0.0.7"
+description = "Dynamic Programming using Neural Networks"
 readme = "README.md"
-authors = [{ name = "Real Python", email = "info@realpython.com" }]
+authors = [{ name = "Marc de la Barrera", email = "marc.delabarrera@gmail.com" }, { name = "Tim de Silva", email = "info@realpython.com" }]
 license = { file = "LICENSE" }
-keywords = ["feed", "reader", "tutorial"]
+keywords = ["economics"]
 dependencies = [
     "numpy >= 1.20.0",
     "jax >= 0.3.22",

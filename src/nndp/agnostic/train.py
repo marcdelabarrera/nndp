@@ -13,8 +13,8 @@ from jax.tree_util import Partial
 import optax
 import matplotlib.pyplot as plt
 # Local imports
-from agnostic_dp.model import Model
-from agnostic_dp.policy import Policy
+from .model import Model
+from .policy import Policy
 
 
 @partial(jax.jit, static_argnames=['model'])
