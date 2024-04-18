@@ -84,7 +84,7 @@ def make_policy_function(nn_to_action:Callable,
                          P:int, 
                          N_nodes:int,
                          N_hidden:int,
-                         f_activation:jaxlib.xla_extension.CompiledFunction,
+                         f_activation:jaxlib.xla_extension.PjitFunction,
                          f_outputs:list
                          ) -> Callable:
     '''
