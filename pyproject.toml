@@ -7,10 +7,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nndp"
-version = "0.0.7"
+version = "0.0.8"
 description = "Dynamic Programming using Neural Networks"
 readme = "README.md"
-authors = [{ name = "Marc de la Barrera", email = "marc.delabarrera@gmail.com" }, { name = "Tim de Silva", email = "info@realpython.com" }]
+authors = [{ name = "Marc de la Barrera", email = "marc.delabarrera@gmail.com" }, { name = "Tim de Silva", email = "tdesilva@mit.edu" }]
 license = { file = "LICENSE" }
 keywords = ["economics"]
 dependencies = [
