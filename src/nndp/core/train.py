@@ -7,12 +7,12 @@ from jax.tree_util import Partial
 import optax
 
 def evaluate_policy(key:PRNGKeyArray,
-                    policy:Callable[[Array, Array], Array],
-                    u:Callable[[Array, Array], Array],
-                    m:Callable[[PRNGKeyArray, Array, Array], Array], 
-                    s0:Array,
-                    T:int,
-                    N_simul:int=1
+                    policy: Callable[[Array, Array], Array],
+                    u: Callable[[Array, Array], Array],
+                    m: Callable[[PRNGKeyArray, Array, Array], Array], 
+                    s0: Array,
+                    T: int,
+                    N_simul: int=1
                     ) -> Array:
     '''
     Calculates value function for a given set of initial states, simulating
