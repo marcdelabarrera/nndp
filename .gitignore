@@ -6,3 +6,4 @@ build/
 env/
 .DS_Store
 agnostic/
+upload_pip.txt

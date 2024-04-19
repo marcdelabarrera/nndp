@@ -1,9 +1,11 @@
+# Standard imports
 from typing import Callable
+
+# Third party imports
 import jax 
 import jax.numpy as jnp
-from jax._src.basearray import Array
+from jax import Array
 from jax.tree_util import Partial
-from jax._src.prng import PRNGKeyArray
 
 # Economic parameters used in functions
 T = 10 # number of periods: t=0, ...,T where death occurs at T
@@ -24,7 +26,7 @@ def u(state:Array, action:Array) -> Array:
     return (beta**state[:,[0]])*(action ** (1. - gamma))/(1. - gamma)
 
 @jax.jit
-def m(key:PRNGKeyArray, state:Array, action:Array) -> Array:
+def m(key:jax.random.PRNGKey, state:Array, action:Array) -> Array:
     '''
     State evolution equation
     '''
@@ -44,7 +46,7 @@ def Gamma(state:Array) -> list[tuple[Array,Array]]:
     return [(jnp.ones((state.shape[0],1))*1e-6, state[:,[1]]+state[:,[2]])]
 
 @Partial(jax.jit,static_argnames='N')
-def F(key:PRNGKeyArray, N:int) -> Array:
+def F(key:jax.random.PRNGKey, N:int) -> Array:
     '''
     Sample N initial states
     '''
