@@ -26,7 +26,7 @@ We parametrize $\pi(s_t)=\tilde\pi(s_t,\theta)$ as a fully connected feedforward
 2. `m(key, state, action)`: state evolution equation for $s_{t+1}$ if $s_t$ = `state` and $a_t$ = `action`. `key` is a JAX RNG key used to simulate any shocks present in the model.
 3. `Gamma(state)`: defines the set of possible actions, $a_t$, at $s_t$ = `state`
 4. `F(key, N)`: samples `N` observations from the distribution of $s_0$. `key` is a JAX RNG key used to simulate any shocks present in the model.
-5. `nn_to_action(state, params, nn)`: defines how the output of a Haiku Neural Network, `nn`, with parameters, `params`, is mapped into an action at $s_t$ = `state`
+5. `policy(state, params, nn)`: defines how the output of a Haiku Neural Network, `nn`, with parameters, `params`, is mapped into an action at $s_t$ = `state`
 
 We provide an example application to the income fluctations problem in `docs/source/notebooks/income_fluctuations/main.ipynb` to illustrate how this framework can be used.
 
