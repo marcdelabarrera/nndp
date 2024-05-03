@@ -8,7 +8,7 @@ def u(state:jax.Array, action:jax.Array)->jax.Array:
   '''
   s = state[...,1]
   c = action[...,0]
-  return jnp.log(s*c).reshape(-1,1)
+  return jnp.log(s*c)
 
 def m(key:jax.random.PRNGKey,state, action):
   '''
