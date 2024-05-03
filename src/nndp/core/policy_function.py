@@ -1,18 +1,31 @@
+# Standard imports
+from typing import Callable
+from dataclasses import dataclass
+# Third party imports
 import jax
 import jaxlib
 import jax.numpy as jnp
 from jax._src.basearray import Array
 from jax.tree_util import Partial
 import haiku as hk
-from typing import Callable
 
-def policy_nn(X:Array,
-              P:int, 
-              N_nodes:int,
-              N_hidden:int,
-              f_activation:Callable,
-              f_outputs:list
-              ) -> Array:
+@dataclass
+class Policy:
+    nn: Callable
+    params: dict
+
+    def __call__(self, x: Array)->Array:
+        return self.nn(self.params, x)
+
+
+
+def deep_nn(x:Array,
+            n_actions:int, 
+            nodes_per_layer:int,
+            hidden_layers:int,
+            hidden_activation:Callable,
+            output_activation:list[Callable]
+            ) -> Array:
     '''
     This function defines a policy function that maps a matrix of states (exogeneous and endogeneous) into the 
     model policy functions. The policy function is a neural network. 
@@ -32,22 +45,24 @@ def policy_nn(X:Array,
     N x P matrix of policies, where P is dimension of policy function
     '''
     # Input layer + hidden laters
-    for i in range(N_hidden + 1):
-        X = hk.Linear(N_nodes)(X)
-        X = f_activation(X)
+    for i in range(hidden_layers + 1):
+        x = hk.Linear(nodes_per_layer)(x)
+        x = hidden_activation(x)
     # Output layer
-    X = hk.Linear(P)(X)
-    Y = [f_outputs[p](X[:, p]) for p in range(P)]        
+    X = hk.Linear(n_actions)(X)
+    Y = [output_activation[p](X[:, p]) for p in range(n_actions)]        
     return jnp.column_stack(Y)
 
-def initialize_nn(key:Array,
-                  K:int, 
-                  P:int, 
-                  N_nodes:int,
-                  N_hidden:int,
-                  f_activation:jaxlib.xla_extension.PjitFunction,
-                  f_outputs:list
-                  ) -> list[dict, Callable]:
+
+
+def initialize_deep_nn(key:Array,
+                       n_states:int, 
+                       n_actions:int, 
+                        nodes_per_layer:int,
+                        hidden_layers:int,
+                        hidden_activation:jaxlib.xla_extension.PjitFunction,
+                        output_activation:list
+                        ) -> list[dict, Callable]:
     '''
     This function initializes a Haiku Neural Network policy function with the given set of parameters. 
     
@@ -68,22 +83,22 @@ def initialize_nn(key:Array,
     nn: policy function that is a neural network
     '''  
     # HK transform to get policy function that takes parameters as inputs
-    init, policy_args = hk.without_apply_rng(hk.transform(policy_nn))
+    init, policy_args = hk.without_apply_rng(hk.transform(deep_nn))
     # Initialize parameters
-    x0 = jnp.column_stack([0.]*K)
+    x0 = jnp.column_stack([0.]*n_states)
     key, subkey = jax.random.split(key)
-    params = init(subkey, x0, P, N_nodes, N_hidden, f_activation, f_outputs)
+    params = init(subkey, x0, n_actions, nodes_per_layer, hidden_layers, hidden_activation, output_activation)
     # Make a function that surpress NN parameters
     def nn(p, X):
-        return policy_args(p, X, P, N_nodes, N_hidden, f_activation, f_outputs)
+        return policy_args(p, X, n_actions, nodes_per_layer, hidden_layers, hidden_activation, output_activation)
     return params, nn
 
 def make_policy_function(nn_to_action:Callable,
                          key:Array,
-                         K:int, 
-                         P:int, 
-                         N_nodes:int,
-                         N_hidden:int,
+                         n_states:int, 
+                         n_actions:int, 
+                         nodes_per_layer:int,
+                         hidden_layers:int,
                          f_activation:jaxlib.xla_extension.PjitFunction,
                          f_outputs:list
                          ) -> Callable:
@@ -110,10 +125,10 @@ def make_policy_function(nn_to_action:Callable,
     policy: policy function that is a neural network with signature policy(state, params)
     '''
     params, nn = initialize_nn(key = key,
-                               K = K,
-                               P = P,
-                               N_nodes = N_nodes,
-                               N_hidden = N_hidden,
+                               K = n_states,
+                               P = n_actions,
+                               N_nodes = nodes_per_layer,
+                               N_hidden = hidden_layers,
                                f_activation = f_activation,
                                f_outputs = f_outputs
                                )
