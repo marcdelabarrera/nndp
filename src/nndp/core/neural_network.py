@@ -9,13 +9,13 @@ from jax._src.basearray import Array
 from jax.tree_util import Partial
 import haiku as hk
 
-@dataclass
-class Policy:
-    nn: Callable
-    params: dict
+# @dataclass
+# class Policy:
+#     nn: Callable
+#     params: dict
 
-    def __call__(self, x: Array)->Array:
-        return self.nn(self.params, x)
+#     def __call__(self, x: Array)->Array:
+#         return self.nn(self.params, x)
 
 
 def deep_nn(x:Array,
@@ -95,73 +95,73 @@ def initialize_deep_nn(key:Array,
         return policy_args(params, x, n_actions, nodes_per_layer, hidden_layers, hidden_activation, output_activation)
     return params, nn
 
-def make_policy_function(nn_to_action:Callable,
-                         key:Array,
-                         n_states:int, 
-                         n_actions:int, 
-                         nodes_per_layer:int,
-                         hidden_layers:int,
-                         hidden_activation:jaxlib.xla_extension.PjitFunction,
-                         output_activation:list
-                         ) -> Callable:
-    '''
-    This function creates a policy function for the model of interest that is Haiku Neural
-    Network with the supplied set of parameters.
+# def make_policy_function(nn_to_action:Callable,
+#                          key:Array,
+#                          n_states:int, 
+#                          n_actions:int, 
+#                          nodes_per_layer:int,
+#                          hidden_layers:int,
+#                          hidden_activation:jaxlib.xla_extension.PjitFunction,
+#                          output_activation:list
+#                          ) -> Callable:
+#     '''
+#     This function creates a policy function for the model of interest that is Haiku Neural
+#     Network with the supplied set of parameters.
     
-    Parameters:
-    ----------
-    nn_to_action: user-defined function that characterizes how outputs of neural network
-        translate into an action in the model
-    key: JAX RNG key
-    K: number of state variables in model
-    P: dimension of output layer = dimension of policy function
-    N_nodes: number of nodes in each layer except output layer
-    N_layers: number of hidden layers
-    f_activation: activation function use in all but output layers (e.g. jax.nn.tanh, jax.nn.relu)
-    f_outputs: list of Callable jaxlib.xla_extension.CompiledFunction (e.g. jax.nn.sigmoid). 
-        The length of this list must be equal to P, as you need a separate activation function for each output. 
+#     Parameters:
+#     ----------
+#     nn_to_action: user-defined function that characterizes how outputs of neural network
+#         translate into an action in the model
+#     key: JAX RNG key
+#     K: number of state variables in model
+#     P: dimension of output layer = dimension of policy function
+#     N_nodes: number of nodes in each layer except output layer
+#     N_layers: number of hidden layers
+#     f_activation: activation function use in all but output layers (e.g. jax.nn.tanh, jax.nn.relu)
+#     f_outputs: list of Callable jaxlib.xla_extension.CompiledFunction (e.g. jax.nn.sigmoid). 
+#         The length of this list must be equal to P, as you need a separate activation function for each output. 
         
-    Returns:
-    ----------
-    params: initialized parameters of NN
-    policy: policy function that is a neural network with signature policy(state, params)
-    '''
-    params, nn = initialize_deep_nn(key = key,
-                               n_states = n_states,
-                               n_actions = n_actions,
-                               nodes_per_layer = nodes_per_layer,
-                               hidden_layers = hidden_layers,
-                               hidden_activation = hidden_activation,
-                               output_activation = output_activation
-                               )
-    policy = Partial(nn_to_action, nn = Partial(nn))
-    return params, policy
+#     Returns:
+#     ----------
+#     params: initialized parameters of NN
+#     policy: policy function that is a neural network with signature policy(state, params)
+#     '''
+#     params, nn = initialize_deep_nn(key = key,
+#                                n_states = n_states,
+#                                n_actions = n_actions,
+#                                nodes_per_layer = nodes_per_layer,
+#                                hidden_layers = hidden_layers,
+#                                hidden_activation = hidden_activation,
+#                                output_activation = output_activation
+#                                )
+#     policy = Partial(nn_to_action, nn = Partial(nn))
+#     return params, policy
 
 
-def make_policy_function(nn_to_action:Callable,
-                         nn: Callable
-                         ) -> Callable:
-    '''
-    This function creates a policy function for the model of interest that is Haiku Neural
-    Network with the supplied set of parameters.
+# def make_policy_function(nn_to_action:Callable,
+#                          nn: Callable
+#                          ) -> Callable:
+#     '''
+#     This function creates a policy function for the model of interest that is Haiku Neural
+#     Network with the supplied set of parameters.
     
-    Parameters:
-    ----------
-    nn_to_action: user-defined function that characterizes how outputs of neural network
-        translate into an action in the model
-    key: JAX RNG key
-    K: number of state variables in model
-    P: dimension of output layer = dimension of policy function
-    N_nodes: number of nodes in each layer except output layer
-    N_layers: number of hidden layers
-    f_activation: activation function use in all but output layers (e.g. jax.nn.tanh, jax.nn.relu)
-    f_outputs: list of Callable jaxlib.xla_extension.CompiledFunction (e.g. jax.nn.sigmoid). 
-        The length of this list must be equal to P, as you need a separate activation function for each output. 
+#     Parameters:
+#     ----------
+#     nn_to_action: user-defined function that characterizes how outputs of neural network
+#         translate into an action in the model
+#     key: JAX RNG key
+#     K: number of state variables in model
+#     P: dimension of output layer = dimension of policy function
+#     N_nodes: number of nodes in each layer except output layer
+#     N_layers: number of hidden layers
+#     f_activation: activation function use in all but output layers (e.g. jax.nn.tanh, jax.nn.relu)
+#     f_outputs: list of Callable jaxlib.xla_extension.CompiledFunction (e.g. jax.nn.sigmoid). 
+#         The length of this list must be equal to P, as you need a separate activation function for each output. 
         
-    Returns:
-    ----------
-    params: initialized parameters of NN
-    policy: policy function that is a neural network with signature policy(state, params)
-    '''
-    policy = Partial(nn_to_action, nn = Partial(nn))
-    return params, policy
+#     Returns:
+#     ----------
+#     params: initialized parameters of NN
+#     policy: policy function that is a neural network with signature policy(state, params)
+#     '''
+#     policy = Partial(nn_to_action, nn = Partial(nn))
+#     return params, policy
