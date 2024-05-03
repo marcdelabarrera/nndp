@@ -22,7 +22,7 @@ $$V(s_0)=\hat V(s_0,\pi)\quad \forall s_0.$$
 
 We parametrize $\pi(s_t)=\tilde\pi(s_t,\theta)$ as a fully connected feedforward neural network and update the networks’ parameters, $\theta$, using stochastic gradient descent. To use this framework, the user only needs to write the following functions that are defined by the dynamic programming problem of interest:
 
-1. `u(state, action)`: reward function for $s_t$ = `state` and $a_t$ = `action`
+1. `u(state, action)`: reward function for $s_t$ = `state` and $a_t$ = `action`. 
 2. `m(key, state, action)`: state evolution equation for $s_{t+1}$ if $s_t$ = `state` and $a_t$ = `action`. `key` is a JAX RNG key used to simulate any shocks present in the model.
 3. `Gamma(state)`: defines the set of possible actions, $a_t$, at $s_t$ = `state`
 4. `F(key, N)`: samples `N` observations from the distribution of $s_0$. `key` is a JAX RNG key used to simulate any shocks present in the model.
