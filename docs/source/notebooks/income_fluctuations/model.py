@@ -23,7 +23,9 @@ def u(state:Array, action:Array) -> Array:
     '''
     Reward function
     '''
-    return (beta**state[:,[0]])*(action ** (1. - gamma))/(1. - gamma)
+    t = state[...,0]
+    c = action[...,0]
+    return ((beta**t)*(c ** (1. - gamma))/(1. - gamma)).reshape(-1,1)
 
 @jax.jit
 def m(key:jax.random.PRNGKey, state:Array, action:Array) -> Array:
