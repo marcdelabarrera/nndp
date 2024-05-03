@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+
+import matplotlib.pyplot as plt
 import jax
 from jax._src.prng import PRNGKeyArray
 from jax._src.basearray import Array
@@ -5,8 +8,6 @@ from typing import Callable
 import jax.numpy as jnp
 from jax.tree_util import Partial
 import optax
-
-
 
 
 
@@ -117,6 +118,22 @@ def train_step(key:PRNGKeyArray,
     params = optax.apply_updates(params, updates)
     return params, opt_state, value
 
+
+
+@dataclass
+class TrainResult:
+    values:Array
+
+    def plot_convergence(self, ax = None, **kwargs):
+        if ax is None:
+            fig, ax = plt.subplots()
+        ax.plot(self.values, **kwargs)
+        ax.set_xlabel('Epoch')
+        ax.set_ylabel('Objective Function')
+        ax.set_title('Convergence of Objective Function')
+        return ax
+    
+
 def train(key:PRNGKeyArray,
           params:dict,
           policy:Callable[[Array, dict, Callable], Array],
@@ -127,7 +144,7 @@ def train(key:PRNGKeyArray,
           T:int,
           N_simul:int,
           batch_size:int,
-          N_iter:int,
+          epochs:int,
           optimizer
           ):
     '''
@@ -153,11 +170,12 @@ def train(key:PRNGKeyArray,
     params: neural network parameters at final step of optimization
     '''
     opt_state = optimizer.init(params)
-    for i in range(N_iter):
-        key, subkey = jax.random.split(key)
-        s0 = F(key = subkey, N = batch_size)
-        key, subkey = jax.random.split(key)
-        params, opt_state, value = train_step(key = subkey, 
+    values = jnp.empty(epochs)
+
+    for i in range(epochs):
+        key, *subkey = jax.random.split(key,3)
+        s0 = F(key = subkey[0], N = batch_size)
+        params, opt_state, value = train_step(key = subkey[1], 
                                               params = params, 
                                               policy = policy, 
                                               nn = nn,
@@ -168,8 +186,12 @@ def train(key:PRNGKeyArray,
                                               N_simul = N_simul, 
                                               optimizer = optimizer, 
                                               opt_state = opt_state)
-        print(f'\rObjective value on training iteration {i} out of {N_iter}: {-value}', end='')
-    return params
+        
+        values = values.at[i].set(value)
+
+        print(f'\rObjective value on training iteration {i} out of {epochs}: {-value}', end='')
+    return params, TrainResult(-values)
+
 
 def simulate(key:Array,
              policy:Callable[[Array, Array], Array],
