@@ -7,6 +7,9 @@ from jax.tree_util import Partial
 import optax
 
 
+
+
+
 @Partial(jax.jit, static_argnames=['policy','nn','u','m', 'N_simul', 'T'])
 def evaluate_policy(key:PRNGKeyArray,
                     policy: Callable[[Array, Array], Array],
@@ -37,16 +40,30 @@ def evaluate_policy(key:PRNGKeyArray,
     Vector of value functions at s0(k) = 
         E(\sum_{t=0}^T \beta^t u(action_t, state_t) | state_0 = s0(k))
     '''
-    K = s0.shape[0]
+
     state = jnp.repeat(s0, repeats = N_simul, axis = 0)
-    V = jnp.zeros((K * N_simul, 1))
+    V = jnp.zeros((s0.shape[0] * N_simul, 1))
     key, *subkey = jax.random.split(key, (T + 1))
-    for t in range(T):
-        action = policy(state, params, nn)
-        V += u(state, action) 
-        state = m(subkey[t], state, action)
-    V = V.reshape(K, -1)
+    V = jax.lax.fori_loop(0, T+1, 
+                    body_fun = Partial(time_iteration, key=jnp.array(subkey), policy = policy,params=params,
+                                       nn=nn, u=u,m=m), 
+                    init_val = (V,state))[0].reshape(s0.shape[0], -1)
     return jnp.mean(V, axis = 1, keepdims = True)                    
+
+def time_iteration(t,
+                   x:tuple[Array, Array],
+                   key:PRNGKeyArray,
+                   policy,
+                   params,
+                   nn,
+                   u,
+                   m):
+    V, state = x
+    action = policy(state, params, nn)
+    V += u(state, action)
+    state_next = m(key[t], state, action)
+    return V, state_next
+
 
 def train_step(key:PRNGKeyArray,
                params:dict,
