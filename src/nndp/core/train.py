@@ -6,8 +6,12 @@ import jax.numpy as jnp
 from jax.tree_util import Partial
 import optax
 
+
+@Partial(jax.jit, static_argnames=['policy','nn','u','m', 'N_simul', 'T'])
 def evaluate_policy(key:PRNGKeyArray,
                     policy: Callable[[Array, Array], Array],
+                    params: dict,
+                    nn: Callable,
                     u: Callable[[Array, Array], Array],
                     m: Callable[[PRNGKeyArray, Array, Array], Array], 
                     s0: Array,
@@ -38,7 +42,7 @@ def evaluate_policy(key:PRNGKeyArray,
     V = jnp.zeros((K * N_simul, 1))
     key, *subkey = jax.random.split(key, (T + 1))
     for t in range(T):
-        action = policy(state)
+        action = policy(state, params, nn)
         V += u(state, action) 
         state = m(subkey[t], state, action)
     V = V.reshape(K, -1)
@@ -46,7 +50,8 @@ def evaluate_policy(key:PRNGKeyArray,
 
 def train_step(key:PRNGKeyArray,
                params:dict,
-               policy:Callable[[Array, Array], Array],
+               policy:Callable[[Array, dict, Callable], Array],
+               nn: Callable[[Array], Array],
                u:Callable[[Array, Array], Array],
                m:Callable[[PRNGKeyArray, Array, Array], Array], 
                s0:Array,
@@ -81,7 +86,9 @@ def train_step(key:PRNGKeyArray,
     '''
     value, grads = jax.value_and_grad(lambda params: -jnp.mean(
         evaluate_policy(key = key, 
-                       policy = Partial(policy, params = params),
+                       policy = policy,
+                       params = params, 
+                        nn= nn,
                        u = u,
                        m = m,
                        s0 = s0,
@@ -95,7 +102,8 @@ def train_step(key:PRNGKeyArray,
 
 def train(key:PRNGKeyArray,
           params:dict,
-          policy:Callable[[Array, Array], Array],
+          policy:Callable[[Array, dict, Callable], Array],
+          nn: Callable[[Array], Array],
           u:Callable[[Array, Array], Array],
           m:Callable[[PRNGKeyArray, Array, Array], Array], 
           F:Callable[[Array, Array], Array],
@@ -135,6 +143,7 @@ def train(key:PRNGKeyArray,
         params, opt_state, value = train_step(key = subkey, 
                                               params = params, 
                                               policy = policy, 
+                                              nn = nn,
                                               u = u, 
                                               m = m, 
                                               s0 = s0, 

@@ -58,11 +58,11 @@ def F(key:jax.random.PRNGKey, N:int) -> Array:
     state = jnp.column_stack([t, y, a])
     return state
 
-@jax.jit
-def nn_to_action(state:Array, 
-                 params:dict,
-                 nn:Callable[[dict, Array], Array]
-                 ) -> Array:
+@Partial(jax.jit, static_argnames=['nn'])
+def policy(state:Array, 
+           params:dict,
+           nn:Callable[[dict, Array], Array]
+           ) -> Array:
     '''
     Defines how a Haiku Neural Network, nn, with parameters, params, is mapped
     into an action.
