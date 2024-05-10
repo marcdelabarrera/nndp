@@ -33,19 +33,12 @@ def m(key:jax.random.PRNGKey, state:Array, action:Array) -> Array:
     State evolution equation
     '''
     N = state.shape[0]
-    t, y, a = state[:,[0]], state[:,[1]], state[:,[2]]
-    c = action
+    t, y, a = state[...,0], state[...,1], state[...,2]
+    c = action[...,0]
     t_next = t + 1
-    y_next = jnp.exp(rho * jnp.log(y) + sigma_y * jax.random.normal(key, shape = (N,1)))
+    y_next = jnp.exp(rho * jnp.log(y) + sigma_y * jax.random.normal(key, shape = (N,)))
     a_next = R * (a + y - c)
     return jnp.column_stack([t_next, y_next, a_next])
-
-@jax.jit
-def Gamma(state:Array) -> list[tuple[Array,Array]]:
-    '''
-    Define bounds of action in each state
-    '''
-    return [(jnp.ones((state.shape[0],1))*1e-6, state[:,[1]]+state[:,[2]])]
 
 @Partial(jax.jit,static_argnames='N')
 def F(key:jax.random.PRNGKey, N:int) -> Array:
@@ -79,6 +72,5 @@ def policy(state:Array,
     -----------
     action: action to take = N_simul x n_actions.
     '''
-    c_min, c_max = Gamma(state)[0]
-    action = c_min + nn(params, state) * c_max
-    return action
+    y, a = state[...,1], state[...,2]
+    return nn(params, state) * (y+a).reshape(-1,1)

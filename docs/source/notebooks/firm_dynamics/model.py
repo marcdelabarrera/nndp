@@ -11,39 +11,34 @@ from jax import Array
 from jax.tree_util import Partial
 
 # Economic parameters used in functions
-T = 10 # number of periods: t=0, ...,T where death occurs at T
-w = 1
-beta = 0.98 # discount factor
-alpha = 0.6
-kappa_h = 1
+T = 100 # number of periods: t=0, ...,T where death occurs at T
+r = 0.04 # discount factor
+alpha = 1/3
+delta = 0.1
+
+rho_z = 0.9
+sigma_z = 0.01
 
 @jax.jit
 def u(state:Array, action:Array) -> Array:
     '''
     Reward function
     '''
-    t, z, n_ = state[...,0], state[...,1], state[...,2]
-    n = action[...,0]
-    return (beta**t)*(z*n**alpha-w*n-kappa_h*(n-n_)**2)
+    t, z, k = state[...,0], state[...,1], state[...,2]
+    k_next = action[...,0]
+    return ((1/(1+r))**t)*(jnp.exp(z)*k**alpha - (k_next-(1-delta)*k))
 
 @jax.jit
 def m(key:jax.random.PRNGKey, state:Array, action:Array) -> Array:
     '''
     State evolution equation
     '''
-    t, z, n_ = state[...,0], state[...,1], state[...,2]
-    n = action[...,0]
+    t, z = state[...,0], state[...,1]
+    k_next = action[...,0]
     t_next = t + 1
-    y_next = jnp.exp(rho * jnp.log(y) + sigma_y * jax.random.normal(key, shape = (N,1)))
-    n_next = R * (a + y - c)
-    return jnp.column_stack([t_next, y_next, a_next])
+    z_next = rho_z * z + sigma_z * jax.random.normal(key, shape = (len(z),))
+    return jnp.column_stack([t_next, z_next, k_next])
 
-@jax.jit
-def Gamma(state:Array) -> list[tuple[Array,Array]]:
-    '''
-    Define bounds of action in each state
-    '''
-    return [(jnp.ones((state.shape[0],1))*1e-6, state[:,[1]]+state[:,[2]])]
 
 @Partial(jax.jit,static_argnames='N')
 def F(key:jax.random.PRNGKey, N:int) -> Array:
@@ -51,11 +46,10 @@ def F(key:jax.random.PRNGKey, N:int) -> Array:
     Sample N initial states
     '''
     t = jnp.zeros(N)
-    key, subkey = jax.random.split(key)
-    y = jnp.exp(jax.random.uniform(subkey, shape = (N,1), minval = logy_bound[0], maxval = logy_bound[1]))
-    key, subkey = jax.random.split(key)
-    a = jax.random.uniform(subkey, shape = (N,1), minval = a_bound[0], maxval = a_bound[1])
-    state = jnp.column_stack([t, y, a])
+    key, *subkey = jax.random.split(key, 3)
+    z = jax.random.uniform(subkey[0], shape = (N,), minval = -0.5, maxval = 0.5)
+    k = jax.random.uniform(subkey[1], shape = (N,), minval = 0, maxval = 20)
+    state = jnp.column_stack([t, z, k])
     return state
 
 @Partial(jax.jit, static_argnames=['nn'])
@@ -77,6 +71,5 @@ def policy(state:Array,
     -----------
     action: action to take = N_simul x n_actions.
     '''
-    c_min, c_max = Gamma(state)[0]
-    action = c_min + nn(params, state) * c_max
-    return action
+    state = jnp.atleast_2d(state)
+    return nn(params, state)
