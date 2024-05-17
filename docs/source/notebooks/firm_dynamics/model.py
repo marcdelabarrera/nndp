@@ -11,13 +11,13 @@ from jax import Array
 from jax.tree_util import Partial
 
 # Economic parameters used in functions
-T = 100 # number of periods: t=0, ...,T where death occurs at T
+T = 200 # number of periods: t=0, ...,T where death occurs at T
 r = 0.04 # discount factor
 alpha = 1/3
 delta = 0.1
 
-rho_z = 0.9
-sigma_z = 0.01
+rho_z = 0.
+sigma_z = 0.1
 
 @jax.jit
 def u(state:Array, action:Array) -> Array:
@@ -49,8 +49,7 @@ def F(key:jax.random.PRNGKey, N:int) -> Array:
     key, *subkey = jax.random.split(key, 3)
     z = jax.random.uniform(subkey[0], shape = (N,), minval = -0.5, maxval = 0.5)
     k = jax.random.uniform(subkey[1], shape = (N,), minval = 0, maxval = 20)
-    state = jnp.column_stack([t, z, k])
-    return state
+    return jnp.column_stack([t, z, k])
 
 @Partial(jax.jit, static_argnames=['nn'])
 def policy(state:Array, 
@@ -73,3 +72,11 @@ def policy(state:Array,
     '''
     state = jnp.atleast_2d(state)
     return nn(params, state)
+
+
+
+def k_star(z:Array) -> Array:
+    '''
+    Computes the steady state capital level given z assuming infinite horizon
+    '''
+    return ((delta+r)/(alpha*jnp.exp(rho_z*z+1/2*sigma_z**2)))**(1/(alpha-1))

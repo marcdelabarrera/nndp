@@ -1,6 +1,8 @@
 import jax
 import jax.numpy as jnp
 
+T = 5
+
 def u(state:jax.Array, action:jax.Array)->jax.Array:
     
   '''
@@ -21,11 +23,10 @@ def m(key:jax.random.PRNGKey,state, action):
 def policy(state, params, nn):
   return nn(params, state)
 
-T = 5
 
 def F(key:jax.random.PRNGKey, N:int):
   '''
   Samples initial distribution of states. t=0 and some cake size from 0 to 1.
   '''
   t = jnp.zeros(shape=(N,1))
-  return jnp.column_stack([t,jax.random.uniform(key, shape = (N,1))])
+  return jnp.column_stack([t, jax.random.uniform(key, shape = (N,1))])
