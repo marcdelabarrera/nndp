@@ -11,13 +11,13 @@ from jax import Array
 from jax.tree_util import Partial
 
 # Economic parameters used in functions
-T = 200 # number of periods: t=0, ...,T where death occurs at T
+T = 30 # number of periods: t=0, ...,T where death occurs at T
 r = 0.04 # discount factor
 alpha = 1/3
 delta = 0.1
 
-rho_z = 0.
-sigma_z = 0.1
+rho_z = 1
+sigma_z = 0
 
 @jax.jit
 def u(state:Array, action:Array) -> Array:
@@ -40,15 +40,15 @@ def m(key:jax.random.PRNGKey, state:Array, action:Array) -> Array:
     return jnp.column_stack([t_next, z_next, k_next])
 
 
-@Partial(jax.jit,static_argnames='N')
+@Partial(jax.jit, static_argnames='N')
 def F(key:jax.random.PRNGKey, N:int) -> Array:
     '''
     Sample N initial states
     '''
     t = jnp.zeros(N)
     key, *subkey = jax.random.split(key, 3)
-    z = jax.random.uniform(subkey[0], shape = (N,), minval = -0.5, maxval = 0.5)
-    k = jax.random.uniform(subkey[1], shape = (N,), minval = 0, maxval = 20)
+    z = jax.random.uniform(subkey[0], shape = (N,), minval = -0.6, maxval = 0.6)
+    k = jax.random.uniform(subkey[1], shape = (N,), minval = 5, maxval = 5)
     return jnp.column_stack([t, z, k])
 
 @Partial(jax.jit, static_argnames=['nn'])
@@ -72,7 +72,6 @@ def policy(state:Array,
     '''
     state = jnp.atleast_2d(state)
     return nn(params, state)
-
 
 
 def k_star(z:Array) -> Array:
