@@ -11,7 +11,7 @@ from jax import Array
 from jax.tree_util import Partial
 
 # Economic parameters used in functions
-T = 30 # number of periods: t=0, ...,T where death occurs at T
+T = 10 # number of periods: t=0, ...,T where death occurs at T
 r = 0.04 # discount factor
 alpha = 1/3
 delta = 0.1
@@ -28,12 +28,15 @@ def u(state:Array, action:Array) -> Array:
     k_next = action[...,0]
     return ((1/(1+r))**t)*(jnp.exp(z)*k**alpha - (k_next-(1-delta)*k))
 
+
+
 @jax.jit
 def m(key:jax.random.PRNGKey, state:Array, action:Array) -> Array:
     '''
     State evolution equation
     '''
-    t, z = state[...,0], state[...,1]
+   
+    t, z = state[...,0], jnp.atleast_1d(state[...,1])
     k_next = action[...,0]
     t_next = t + 1
     z_next = rho_z * z + sigma_z * jax.random.normal(key, shape = (len(z),))
@@ -48,7 +51,7 @@ def F(key:jax.random.PRNGKey, N:int) -> Array:
     t = jnp.zeros(N)
     key, *subkey = jax.random.split(key, 3)
     z = jax.random.uniform(subkey[0], shape = (N,), minval = -0.6, maxval = 0.6)
-    k = jax.random.uniform(subkey[1], shape = (N,), minval = 5, maxval = 5)
+    k = jax.random.uniform(subkey[1], shape = (N,), minval = 0, maxval = 15)
     return jnp.column_stack([t, z, k])
 
 @Partial(jax.jit, static_argnames=['nn'])

@@ -11,7 +11,7 @@ import optax
 
 
 
-@Partial(jax.jit, static_argnames=['policy','nn','u','m', 'N_simul', 'T'])
+#@Partial(jax.jit, static_argnames=['policy','nn','u','m', 'N_simul', 'T'])
 def evaluate_policy(key:PRNGKeyArray,
                     policy: Callable[[Array, Array], Array],
                     params: dict,
@@ -45,6 +45,8 @@ def evaluate_policy(key:PRNGKeyArray,
     state = jnp.repeat(s0, repeats = N_simul, axis = 0)
     V = jnp.zeros(s0.shape[0] * N_simul)
     key, *subkey = jax.random.split(key, max((T + 1),2)) # ensure that works when T = 0
+    #print(key)
+    #print(subkey)
     V = jax.lax.fori_loop(0, T+1, 
                     body_fun = Partial(time_iteration, key=jnp.array(subkey), policy = policy,params=params,
                                        nn=nn, u=u,m=m), 
