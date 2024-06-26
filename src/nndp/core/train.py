@@ -11,7 +11,7 @@ import optax
 
 
 
-#@Partial(jax.jit, static_argnames=['policy','nn','u','m', 'N_simul', 'T'])
+@Partial(jax.jit, static_argnames=['policy','nn','u','m', 'N_simul', 'T'])
 def evaluate_policy(key:PRNGKeyArray,
                     policy: Callable[[Array, Array], Array],
                     params: dict,
