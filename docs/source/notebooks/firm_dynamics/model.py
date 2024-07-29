@@ -17,7 +17,7 @@ alpha = 1/3
 delta = 0.1
 
 rho_z = 1
-sigma_z = 0
+sigma_z = 0.1
 
 @jax.jit
 def u(state:Array, action:Array) -> Array:
@@ -50,7 +50,8 @@ def F(key:jax.random.PRNGKey, N:int) -> Array:
     Sample N initial states
     '''
     key, *subkey = jax.random.split(key, 4)
-    t = jax.random.randint(subkey[0], shape=(N,), minval= 0, maxval = T)
+    #t = jax.random.randint(subkey[0], shape=(N,), minval= 0, maxval = T)
+    t = jnp.zeros((N,))
     z = jax.random.uniform(subkey[1], shape = (N,), minval = -0.6, maxval = 0.6)
     k = jax.random.uniform(subkey[2], shape = (N,), minval = 0, maxval = 15)
     return jnp.column_stack([t, z, k])
@@ -75,11 +76,11 @@ def policy(state:Array,
     action: action to take = N_simul x n_actions.
     '''
     state = jnp.atleast_2d(state)
-    #t, z, k = state[...,0], state[...,1], state[...,2]
-    #t = t/T
-    #z = z
-    #k = (k-10)/10
-    #state = jnp.column_stack([t, z, k])
+    t, z, k = state[...,0], state[...,1], state[...,2]
+    t = t/T
+    z = z
+    k = (k-10)/10
+    state = jnp.column_stack([t, z, k])
     return nn(params, state)
 
 

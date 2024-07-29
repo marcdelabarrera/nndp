@@ -94,3 +94,10 @@ def initialize_deep_nn(key:Array,
     def nn(params, x):
         return policy_args(params, x, n_actions, nodes_per_layer, hidden_layers, hidden_activation, output_activation)
     return params, nn
+
+
+
+def normalize_params(params:dict)->dict:
+    for layer in params.keys():
+        params[layer]['w'] = params[layer]['w'] / jnp.sqrt(params[layer]['w'].shape[0])
+    return params

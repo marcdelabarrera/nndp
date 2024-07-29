@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nndp"
-version = "0.1.0"
+version = "0.1.1"
 description = "Dynamic Programming using Neural Networks"
 readme = "README.md"
 authors = [{ name = "Marc de la Barrera", email = "marc.delabarrera@gmail.com" }, { name = "Tim de Silva", email = "tdesilva@mit.edu" }]
