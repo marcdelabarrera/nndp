@@ -25,7 +25,7 @@ def u(state:Array, action:Array) -> Array:
     '''
     t = state[...,0]
     c = action[...,0]
-    return (beta**t)*(c ** (1. - gamma))/(1. - gamma)
+    return jnp.where(t<=T, (beta**t)*(c ** (1. - gamma))/(1. - gamma),0)
 
 @jax.jit
 def m(key:jax.random.PRNGKey, state:Array, action:Array) -> Array:
