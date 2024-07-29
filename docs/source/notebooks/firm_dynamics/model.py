@@ -75,6 +75,11 @@ def policy(state:Array,
     action: action to take = N_simul x n_actions.
     '''
     state = jnp.atleast_2d(state)
+    #t, z, k = state[...,0], state[...,1], state[...,2]
+    #t = t/T
+    #z = z
+    #k = (k-10)/10
+    #state = jnp.column_stack([t, z, k])
     return nn(params, state)
 
 
