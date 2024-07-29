@@ -45,7 +45,7 @@ def m(key:jax.random.PRNGKey, state:Array, action:Array) -> Array:
 
 
 @Partial(jax.jit, static_argnames='N')
-def F(key:jax.random.PRNGKey, N:int) -> Array:
+def F(key:jax.random.PRNGKey, N:int=1) -> Array:
     '''
     Sample N initial states
     '''
