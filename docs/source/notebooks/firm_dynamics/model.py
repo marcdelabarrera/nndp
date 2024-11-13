@@ -11,12 +11,12 @@ from jax import Array
 from jax.tree_util import Partial
 
 # Economic parameters used in functions
-T = 10 # number of periods: t=0, ...,T where death occurs at T
+T = 40 # number of periods: t=0, ...,T where death occurs at T
 r = 0.04 # discount factor
 alpha = 1/3
 delta = 0.1
 
-rho_z = 1
+rho_z = 0.8
 sigma_z = 0.1
 
 @jax.jit
